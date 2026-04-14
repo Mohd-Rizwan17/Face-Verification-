@@ -331,4 +331,40 @@ window.addEventListener("keydown", (event) => {
   }
 });
 
-loadModels();
+function waitForFaceApi() {
+  return new Promise((resolve, reject) => {
+    if (window.faceapi) {
+      return resolve();
+    }
+    const script = document.querySelector(
+      'script[src*="face-api.js"], script[src*="face-api.min.js"]',
+    );
+    if (!script) {
+      return reject(new Error("face-api.js script tag not found."));
+    }
+    script.addEventListener("load", () => {
+      if (window.faceapi) {
+        resolve();
+      } else {
+        reject(new Error("face-api.js loaded but faceapi is not defined."));
+      }
+    });
+    script.addEventListener("error", () => {
+      reject(new Error("Unable to load face-api.js from CDN."));
+    });
+  });
+}
+
+async function initApp() {
+  try {
+    await waitForFaceApi();
+    await loadModels();
+  } catch (error) {
+    console.error(error);
+    updateModalStatus(
+      "face-api.js failed to initialize. Refresh the page and try again.",
+    );
+  }
+}
+
+initApp();
