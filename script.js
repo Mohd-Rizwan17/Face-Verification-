@@ -86,7 +86,12 @@ function setPreview(file) {
 
 photoInput.addEventListener("change", (event) => {
   const file = event.target.files[0];
-  if (!file) return;
+  if (!file) {
+    previewImage.src = "";
+    previewContainer.classList.add("hidden");
+    verifyButton.disabled = true;
+    return;
+  }
   setPreview(file);
 });
 
@@ -107,9 +112,8 @@ function openModal() {
 function closeVerificationModal() {
   verificationModal.classList.add("hidden");
   stopWebcam();
-  if (!isVerifying) {
-    resetModal();
-  }
+  hideToast();
+  resetModal();
 }
 
 async function startWebcam() {
@@ -204,8 +208,6 @@ function showCapturedPreview(src) {
 }
 
 function showResult(success, title, message, statusIcon, statusTextValue) {
-  cameraRing.classList.remove("ring-loading", "ring-success", "ring-fail");
-  cameraRing.classList.add(success ? "ring-success" : "ring-fail");
   updateModalStatus(message);
   updateStatusCard(
     statusIcon,
@@ -228,12 +230,11 @@ function hideToast() {
 }
 
 function handleDetectionError(error) {
-  stopWebcam();
   captureButton.disabled = false;
   if (lastCaptureData) {
     showCapturedPreview(lastCaptureData);
   } else {
-    webcamVideo.classList.add("hidden");
+    webcamVideo.classList.remove("hidden");
     capturedPhoto.classList.add("hidden");
   }
   if (error.code === "NO_FACE") {
@@ -287,7 +288,6 @@ captureButton.addEventListener("click", async () => {
     if (!captureData) {
       throw new Error("Camera capture failed.");
     }
-    stopWebcam();
     const capturedImage = await loadImage(captureData);
     const liveDescriptor = await detectFaceDescriptor(capturedImage);
     const { matched, distance } = compareDescriptors(
@@ -325,6 +325,9 @@ captureButton.addEventListener("click", async () => {
 retryButton.addEventListener("click", () => {
   hideToast();
   resetModal();
+  if (!currentStream) {
+    startWebcam();
+  }
 });
 
 closeToast.addEventListener("click", hideToast);
