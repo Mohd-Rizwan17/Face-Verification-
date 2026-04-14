@@ -28,7 +28,13 @@ let isModelsLoaded = false;
 let isVerifying = false;
 let lastCaptureData = null;
 
+let isImageUploaded = false;
+let isCameraOpen = false;
+let isModalOpen = false;
+let detectionStatus = null;
+
 verifyButton.disabled = true;
+updateVerificationPanelState();
 
 async function loadModels() {
   try {
@@ -68,17 +74,67 @@ function updateModalStatus(message) {
   modalStatus.textContent = message;
 }
 
+function updateVerifyButtonState() {
+  verifyButton.disabled = !isImageUploaded;
+}
+
+function updateVerificationPanelState() {
+  statusAvatar.style.backgroundImage = "";
+  statusAvatar.style.backgroundSize = "cover";
+  statusAvatar.style.backgroundPosition = "center";
+  statusAvatar.textContent = "";
+  statusRing.classList.remove(
+    "status-loading",
+    "status-success",
+    "status-fail",
+  );
+
+  if (!isImageUploaded) {
+    statusRing.classList.add("status-loading");
+    setInfoText("Waiting for face image.");
+    return;
+  }
+
+  if (detectionStatus === null) {
+    statusRing.classList.add("status-loading");
+    statusAvatar.style.backgroundImage = `url(${previewImage.src})`;
+    setInfoText("Face image uploaded. Ready to verify.");
+    return;
+  }
+
+  if (detectionStatus === "success") {
+    statusRing.classList.add("status-success");
+    statusAvatar.textContent = "✅";
+    setInfoText("Face is matched");
+    return;
+  }
+
+  if (detectionStatus === "failed") {
+    statusRing.classList.add("status-fail");
+    statusAvatar.textContent = "❌";
+    setInfoText("Face verification failed.");
+  }
+}
+
+function resetVerificationPanelState() {
+  isImageUploaded = false;
+  detectionStatus = null;
+  photoInput.value = "";
+  previewImage.src = "";
+  previewContainer.classList.add("hidden");
+  updateVerifyButtonState();
+  updateVerificationPanelState();
+}
+
 function setPreview(file) {
   const reader = new FileReader();
   reader.onload = () => {
     previewImage.src = reader.result;
     previewContainer.classList.remove("hidden");
-    verifyButton.disabled = false;
-    updateStatusCard(
-      "👤",
-      "Face image uploaded. Ready to verify.",
-      "status-loading",
-    );
+    isImageUploaded = true;
+    detectionStatus = null;
+    updateVerifyButtonState();
+    updateVerificationPanelState();
     hideToast();
   };
   reader.readAsDataURL(file);
@@ -87,22 +143,22 @@ function setPreview(file) {
 photoInput.addEventListener("change", (event) => {
   const file = event.target.files[0];
   if (!file) {
-    previewImage.src = "";
-    previewContainer.classList.add("hidden");
-    verifyButton.disabled = true;
+    resetVerificationPanelState();
     return;
   }
   setPreview(file);
 });
 
 verifyButton.addEventListener("click", () => {
-  if (!previewImage.src || !isModelsLoaded) return;
+  if (!isImageUploaded || !isModelsLoaded) return;
   openModal();
 });
 
 closeModal.addEventListener("click", closeVerificationModal);
 
 function openModal() {
+  if (isModalOpen) return;
+  isModalOpen = true;
   verificationModal.classList.remove("hidden");
   resetModal();
   updateModalStatus("Preparing camera...");
@@ -112,8 +168,11 @@ function openModal() {
 function closeVerificationModal() {
   verificationModal.classList.add("hidden");
   stopWebcam();
+  isModalOpen = false;
+  isCameraOpen = false;
   hideToast();
   resetModal();
+  resetVerificationPanelState();
 }
 
 async function startWebcam() {
@@ -124,6 +183,7 @@ async function startWebcam() {
     });
     webcamVideo.srcObject = currentStream;
     await webcamVideo.play();
+    isCameraOpen = true;
     updateModalStatus("Live preview active. Capture your face to compare.");
   } catch (error) {
     console.error("Webcam error:", error);
@@ -230,6 +290,7 @@ function hideToast() {
 }
 
 function handleDetectionError(error) {
+  detectionStatus = "failed";
   captureButton.disabled = false;
   if (lastCaptureData) {
     showCapturedPreview(lastCaptureData);
@@ -297,6 +358,7 @@ captureButton.addEventListener("click", async () => {
     showCapturedPreview(captureData);
 
     if (matched) {
+      detectionStatus = "success";
       showResult(
         true,
         "Verified",
@@ -305,6 +367,7 @@ captureButton.addEventListener("click", async () => {
         "Face is matched",
       );
     } else {
+      detectionStatus = "failed";
       showResult(
         false,
         "Verification Failed",
@@ -324,6 +387,8 @@ captureButton.addEventListener("click", async () => {
 
 retryButton.addEventListener("click", () => {
   hideToast();
+  detectionStatus = null;
+  updateVerificationPanelState();
   resetModal();
   if (!currentStream) {
     startWebcam();
