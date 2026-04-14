@@ -40,13 +40,15 @@
 
           <section class="panel panel-status">
             <div class="status-card">
-              <div class="status-label">Verify Identity</div>
-              <div class="status-ring">
+              <div class="status-label">Verification panel</div>
+              <div class="status-ring status-loading" id="statusRing">
                 <div class="status-avatar" id="statusAvatar">
                   <span class="avatar-icon">👤</span>
                 </div>
               </div>
-              <div class="status-text">Scanning... Verifying</div>
+              <div class="status-text" id="statusText">
+                Waiting for face image.
+              </div>
             </div>
           </section>
         </div>
@@ -66,10 +68,15 @@
         <div class="modal-body">
           <div id="cameraRing" class="camera-ring ring-loading">
             <video id="webcamVideo" autoplay muted playsinline></video>
+            <img
+              id="capturedPhoto"
+              class="capture-preview hidden"
+              alt="Captured face"
+            />
           </div>
-          <div id="modalStatus" class="modal-status">Ready to verify</div>
+          <div id="modalStatus" class="modal-status">Preparing camera...</div>
           <button id="captureButton" class="action-btn modal-action">
-            Start Match
+            Capture & Compare
           </button>
         </div>
       </div>
@@ -77,9 +84,9 @@
 
     <div id="resultToast" class="toast-toast hidden">
       <div id="toastIcon" class="toast-icon">✅</div>
-      <div>
-        <h3 id="toastTitle">Face is matched.</h3>
-        <p id="toastMessage">Live face matched successfully.</p>
+      <div class="toast-copy">
+        <h3 id="toastTitle">Verified</h3>
+        <p id="toastMessage">Face verification successful.</p>
       </div>
       <div class="toast-actions">
         <button id="retryButton" class="secondary-btn hidden">Retry</button>
@@ -88,6 +95,8 @@
     </div>
 
     <canvas id="captureCanvas" class="hidden"></canvas>
-    <script src="script.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+    <script defer src="script.js"></script>
   </body>
 </html>

@@ -1,22 +1,36 @@
 ﻿:root {
   color-scheme: dark;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   background: #070b16;
   color: #eef2ff;
 }
 * {
   box-sizing: border-box;
 }
-html, body {
+html,
+body {
   margin: 0;
   min-height: 100%;
 }
 body {
-  background: radial-gradient(circle at top, rgba(56, 189, 248, 0.18), transparent 25%),
-              radial-gradient(circle at 80% 15%, rgba(59, 130, 246, 0.16), transparent 20%),
-              linear-gradient(180deg, #03050d 0%, #0a1425 100%);
+  background:
+    radial-gradient(circle at top, rgba(56, 189, 248, 0.18), transparent 25%),
+    radial-gradient(
+      circle at 80% 15%,
+      rgba(59, 130, 246, 0.16),
+      transparent 20%
+    ),
+    linear-gradient(180deg, #03050d 0%, #0a1425 100%);
 }
-button, input {
+button,
+input {
   font: inherit;
 }
 .page-shell {
@@ -85,7 +99,10 @@ button, input {
   border-radius: 28px;
   text-align: center;
   cursor: pointer;
-  transition: background 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease,
+    border-color 0.25s ease;
 }
 .upload-drop:hover {
   background: rgba(56, 189, 248, 0.07);
@@ -146,7 +163,10 @@ button, input {
   border-radius: 999px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
 .action-btn {
   width: 100%;
@@ -198,12 +218,24 @@ button, input {
   aspect-ratio: 1;
   margin: 24px auto 18px;
   border-radius: 50%;
-  background: radial-gradient(circle at top, rgba(56, 189, 248, 0.2), transparent 45%),
-              rgba(15, 23, 42, 0.9);
+  background:
+    radial-gradient(circle at top, rgba(56, 189, 248, 0.2), transparent 45%),
+    rgba(15, 23, 42, 0.9);
   border: 2px solid rgba(56, 189, 248, 0.4);
   display: grid;
   place-items: center;
   box-shadow: 0 0 48px rgba(56, 189, 248, 0.18);
+}
+.status-ring.status-loading {
+  animation: statusPulse 1.8s ease-in-out infinite;
+}
+.status-ring.status-success {
+  border-color: #4ade80;
+  box-shadow: 0 0 40px rgba(74, 222, 128, 0.2);
+}
+.status-ring.status-fail {
+  border-color: #fb7185;
+  box-shadow: 0 0 40px rgba(251, 113, 133, 0.2);
 }
 .status-avatar {
   width: 160px;
@@ -287,12 +319,16 @@ button, input {
   border-color: #fb7185;
   box-shadow: 0 0 36px rgba(251, 113, 133, 0.25);
 }
-#webcamVideo {
+#webcamVideo,
+.capture-preview {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
   background: #0f172a;
+}
+.capture-preview {
+  position: relative;
 }
 .modal-status {
   color: #cbd5e1;
@@ -303,45 +339,71 @@ button, input {
   min-width: 220px;
 }
 .toast-toast {
-  background: rgba(7, 11, 22, 0.9);
-  pointer-events: none;
+  width: min(480px, 100%);
+  gap: 18px;
+  background: rgba(15, 23, 42, 0.96);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 28px;
+  padding: 24px 24px 18px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+  animation: fadeIn 0.25s ease;
 }
-.toast-toast .toast-icon {
-  width: 72px;
-  height: 72px;
-  border-radius: 24px;
+.toast-icon {
+  width: 54px;
+  height: 54px;
+  min-width: 54px;
+  border-radius: 18px;
   display: grid;
   place-items: center;
-  font-size: 2rem;
-  margin-bottom: 18px;
-  background: rgba(56, 189, 248, 0.12);
-  color: #22d3ee;
+  background: rgba(56, 189, 248, 0.14);
+  color: #38bdf8;
+  font-size: 1.6rem;
 }
-.toast-toast > div {
-  max-width: 420px;
-  text-align: center;
-}
-.toast-toast h3 {
+.toast-copy h3 {
   margin: 0;
-  font-size: 1.4rem;
+  font-size: 1.1rem;
+  color: #eef2ff;
+}
+.toast-copy p {
+  margin: 6px 0 0;
+  color: #cbd5e1;
 }
 .toast-actions {
-  margin-top: 20px;
   display: flex;
   gap: 12px;
-  justify-content: center;
+  justify-content: flex-end;
   flex-wrap: wrap;
 }
 .hidden {
   display: none !important;
 }
 @keyframes ringPulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     box-shadow: 0 0 24px rgba(56, 189, 248, 0.18);
   }
   50% {
     transform: scale(1.03);
     box-shadow: 0 0 42px rgba(56, 189, 248, 0.32);
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes statusPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.01);
   }
 }
