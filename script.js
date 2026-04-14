@@ -28,6 +28,8 @@ let isModelsLoaded = false;
 let isVerifying = false;
 let lastCaptureData = null;
 
+verifyButton.disabled = true;
+
 async function loadModels() {
   try {
     updateModalStatus("Loading face recognition models...");
@@ -38,7 +40,9 @@ async function loadModels() {
     ]);
     isModelsLoaded = true;
     setInfoText("Upload a photo to start verification.");
-    verifyButton.disabled = !previewImage.src;
+    if (previewImage.src) {
+      verifyButton.disabled = false;
+    }
   } catch (error) {
     console.error("Face model load failed:", error);
     updateModalStatus("Unable to load face models. Check network and refresh.");
@@ -69,7 +73,7 @@ function setPreview(file) {
   reader.onload = () => {
     previewImage.src = reader.result;
     previewContainer.classList.remove("hidden");
-    verifyButton.disabled = !isModelsLoaded;
+    verifyButton.disabled = false;
     updateStatusCard(
       "👤",
       "Face image uploaded. Ready to verify.",
@@ -320,7 +324,7 @@ captureButton.addEventListener("click", async () => {
 
 retryButton.addEventListener("click", () => {
   hideToast();
-  openModal();
+  resetModal();
 });
 
 closeToast.addEventListener("click", hideToast);
