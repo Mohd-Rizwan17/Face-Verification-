@@ -1,0 +1,93 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Face Verification Portal</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <div class="portal-card">
+        <div class="portal-grid">
+          <section class="panel panel-upload">
+            <div class="panel-header">
+              <span class="eyebrow">Face Verification Portal</span>
+              <h1>Upload your photo</h1>
+              <p>Upload an image and verify it using your webcam.</p>
+            </div>
+
+            <label class="upload-drop" for="photoInput">
+              <input id="photoInput" type="file" accept="image/*" />
+              <div class="upload-icon">📸</div>
+              <div class="upload-copy">
+                <p>Click to upload your photo</p>
+                <small>JPG, PNG, WEBP supported</small>
+              </div>
+            </label>
+
+            <div id="previewContainer" class="preview-panel hidden">
+              <p class="preview-label">Preview</p>
+              <div class="preview-frame">
+                <img id="previewImage" src="" alt="Uploaded preview" />
+              </div>
+            </div>
+
+            <button id="verifyButton" class="action-btn" disabled>
+              Verify Face
+            </button>
+          </section>
+
+          <section class="panel panel-status">
+            <div class="status-card">
+              <div class="status-label">Verify Identity</div>
+              <div class="status-ring">
+                <div class="status-avatar" id="statusAvatar">
+                  <span class="avatar-icon">👤</span>
+                </div>
+              </div>
+              <div class="status-text">Scanning... Verifying</div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <div id="verificationModal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div>
+            <p class="modal-eyebrow">Face Verification</p>
+            <h2>Live camera match</h2>
+          </div>
+          <button id="closeModal" class="close-btn">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <div id="cameraRing" class="camera-ring ring-loading">
+            <video id="webcamVideo" autoplay muted playsinline></video>
+          </div>
+          <div id="modalStatus" class="modal-status">Ready to verify</div>
+          <button id="captureButton" class="action-btn modal-action">
+            Start Match
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="resultToast" class="toast-toast hidden">
+      <div id="toastIcon" class="toast-icon">✅</div>
+      <div>
+        <h3 id="toastTitle">Face is matched.</h3>
+        <p id="toastMessage">Live face matched successfully.</p>
+      </div>
+      <div class="toast-actions">
+        <button id="retryButton" class="secondary-btn hidden">Retry</button>
+        <button id="closeToast" class="secondary-btn">Close</button>
+      </div>
+    </div>
+
+    <canvas id="captureCanvas" class="hidden"></canvas>
+    <script src="script.js"></script>
+  </body>
+</html>
